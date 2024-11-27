@@ -1,10 +1,19 @@
 import streamlit as st
 from pymongo import MongoClient
-
+from urllib.parse import quote_plus
 # MongoDB connection
 #client = MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database_name>?retryWrites=true&w=majority")
 
-client = MongoClient("mongodb+srv://scofieldtestmongodb:<scofieldtestmongodb##@@>@cluster0.4jiw1.mongodb.net/")
+##client = MongoClient("mongodb+srv://scofieldtestmongodb:<scofieldtestmongodb##@@>@cluster0.4jiw1.mongodb.net/")
+
+
+username = "scofieldtestmongodb"  # Замените своим именем пользователя
+password = "scofieldtestmongodb##@@"  # Замените своим паролем
+encoded_password = quote_plus(password)
+
+uri = f"mongodb+srv://{username}:{encoded_password}@cluster0.mongodb.net/migration_db?retryWrites=true&w=majority"
+print(uri)
+
 db = client["migration_db"]
 collection = db["specialists"]
 
