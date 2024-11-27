@@ -1,39 +1,42 @@
 import streamlit as st
 from pymongo import MongoClient
 
-# Подключение к MongoDB
+# MongoDB connection
 client = MongoClient("mongodb://localhost:27017/")
 db = client["migration_db"]
 collection = db["specialists"]
 
-# Функции CRUD
+# Create function
 def create_specialist(data):
     collection.insert_one(data)
 
+# Read function
 def read_specialists():
     return list(collection.find())
 
+# Update function
 def update_specialist(specialist_id, updated_data):
     collection.update_one({"specialist_id": specialist_id}, {"$set": updated_data})
 
+# Delete function
 def delete_specialist(specialist_id):
     collection.delete_one({"specialist_id": specialist_id})
 
-# Streamlit интерфейс
-st.title("CRUD-приложение для работы с MongoDB")
+# Streamlit interface
+st.title("CRUD Application for MongoDB")
 
-# Добавление данных
-st.header("Добавить нового специалиста")
-specialist_id = st.number_input("ID специалиста", min_value=1, step=1)
-name = st.text_input("Имя")
-age = st.number_input("Возраст", min_value=18, step=1)
-education = st.selectbox("Образование", ["Bachelor", "Master", "PhD"])
-specialization = st.text_input("Специализация")
-experience = st.number_input("Стаж работы (лет)", min_value=0, step=1)
-salary = st.number_input("Зарплата", min_value=0, step=100)
-migration_date = st.text_input("Дата миграции (YYYY-MM-DD)", value="")
+# CREATE
+st.header("Add a New Specialist")
+specialist_id = st.number_input("Specialist ID", min_value=1, step=1)
+name = st.text_input("Name")
+age = st.number_input("Age", min_value=18, step=1)
+education = st.selectbox("Education Level", ["Bachelor", "Master", "PhD"])
+specialization = st.text_input("Specialization")
+experience = st.number_input("Years of Experience", min_value=0, step=1)
+salary = st.number_input("Current Salary", min_value=0, step=100)
+migration_date = st.text_input("Migration Date (YYYY-MM-DD)", value="")
 
-if st.button("Добавить"):
+if st.button("Add Specialist"):
     data = {
         "specialist_id": specialist_id,
         "name": name,
@@ -45,25 +48,28 @@ if st.button("Добавить"):
         "migration_date": migration_date,
     }
     create_specialist(data)
-    st.success("Данные успешно добавлены!")
+    st.success("Specialist added successfully!")
 
-# Просмотр данных
-st.header("Просмотр специалистов")
+# READ
+st.header("View All Specialists")
 specialists = read_specialists()
 for specialist in specialists:
     st.write(specialist)
 
-# Обновление данных
-st.header("Обновление данных")
-update_id = st.number_input("ID специалиста для обновления", min_value=1, step=1)
-updated_name = st.text_input("Новое имя")
-if st.button("Обновить"):
-    update_specialist(update_id, {"name": updated_name})
-    st.success("Данные успешно обновлены!")
+# UPDATE
+st.header("Update Specialist Data")
+update_id = st.number_input("Specialist ID to Update", min_value=1, step=1)
+updated_field = st.selectbox("Field to Update", ["name", "age", "education", "specialization", "years_experience", "current_salary", "migration_date"])
+updated_value = st.text_input(f"New Value for {updated_field}")
 
-# Удаление данных
-st.header("Удаление специалиста")
-delete_id = st.number_input("ID специалиста для удаления", min_value=1, step=1)
-if st.button("Удалить"):
+if st.button("Update Specialist"):
+    update_specialist(update_id, {updated_field: updated_value})
+    st.success("Specialist updated successfully!")
+
+# DELETE
+st.header("Delete Specialist")
+delete_id = st.number_input("Specialist ID to Delete", min_value=1, step=1)
+
+if st.button("Delete Specialist"):
     delete_specialist(delete_id)
-    st.success("Данные успешно удалены!")
+    st.success("Specialist deleted successfully!")
