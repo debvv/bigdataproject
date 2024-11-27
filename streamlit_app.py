@@ -2,7 +2,9 @@ import streamlit as st
 from pymongo import MongoClient
 
 # MongoDB connection
-client = MongoClient("mongodb://localhost:27017/")
+#client = MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/<database_name>?retryWrites=true&w=majority")
+
+client = MongoClient("mongodb+srv://scofieldtestmongodb:<scofieldtestmongodb##@@>@cluster0.4jiw1.mongodb.net/")
 db = client["migration_db"]
 collection = db["specialists"]
 
