@@ -10,5 +10,9 @@ try:
     print(f"Найдено {len(specialists)} записей в коллекции 'specialists'")
     for specialist in specialists:
         print(specialist)
+    # Заголовок приложения
+    st.title("1")
 except Exception as e:
     print(f"Ошибка подключения: {e}")
+    # Заголовок приложения
+    st.title("2")
