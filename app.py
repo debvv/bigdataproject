@@ -8,10 +8,10 @@ import seaborn as sns
 
 
 # Подключение к MongoDB
-#client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb://localhost:27017/")
 db = client['migration_db']
 collection = db['specialists']
-client = MongoClient("mongodb://scofieldtestmongodb:scofieldtestmongodb##@@@localhost:27017/")
+#client = MongoClient("mongodb://scofieldtestmongodb:scofieldtestmongodb##@@@localhost:27017/")
 try:
     #client = MongoClient("mongodb://127.0.0.1:27017/")
     #если защищена
