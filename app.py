@@ -4,10 +4,29 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+
+
 # Подключение к MongoDB
-client = MongoClient("mongodb://localhost:27017/")
-db = client['migration_db']
-collection = db['specialists']
+#client = MongoClient("mongodb://localhost:27017/")
+#db = client['migration_db']
+#collection = db['specialists']
+
+try:
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client['migration_db']
+    collection = db['specialists']
+    
+    # Проверка данных
+    specialists = list(collection.find({}))
+    print(f"Найдено {len(specialists)} записей в коллекции 'specialists'")
+    for specialist in specialists:
+        print(specialist)
+except Exception as e:
+    print(f"Ошибка подключения: {e}")
+
+
+
 
 # Заголовок приложения
 st.title("Управление данными IT-специалистов")
