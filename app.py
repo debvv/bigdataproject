@@ -37,8 +37,11 @@ choice = st.sidebar.selectbox("Выберите действие", menu)
 
 # Функция: Получение данных из MongoDB
 def fetch_all_data():
-    data = list(collection.find({}, {"_id": 0}))
-    return pd.DataFrame(data)
+    data = list(collection.find())  # Убрать фильтр {"_id": 0}
+    if data:
+        return pd.DataFrame(data)
+    else:
+        return pd.DataFrame()  # Вернуть пустой DataFrame, если данных нет
 
 # Функция: Расчет индекса миграции
 def calculate_migration_index(current_salary, years_experience):
