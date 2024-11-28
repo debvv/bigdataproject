@@ -92,8 +92,10 @@ if choice == "Добавить специалиста":
 
 # Просмотр специалистов
 elif choice == "Просмотр специалистов":
+    
     st.subheader("Список всех специалистов")
     data = fetch_all_data()
+    st.write("Отладка: данные из MongoDB", data)  #new 
     if not data.empty:
         st.dataframe(data)
     else:
