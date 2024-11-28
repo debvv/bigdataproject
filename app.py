@@ -2,12 +2,14 @@ import streamlit as st
 from pymongo import MongoClient
 from urllib.parse import quote_plus
 
-username = "scofieldtestmongodb"
-password = "scofieldtestmongodb##@@@"
-encoded_password = quote_plus(password)
+# Подключение к MongoDB (с кодированием пароля)
+username = "scofieldtestmongodb"  # Ваше имя пользователя
+password = "scofieldtestmongodb##@@@"  # Ваш пароль
+encoded_password = quote_plus(password)  # Кодируем пароль
 uri = f"mongodb+srv://{username}:{encoded_password}@cluster0.mongodb.net/migration_db?retryWrites=true&w=majority"
-# Подключение к MongoDB
-#client = MongoClient("mongodb://scofieldtestmongodb:scofieldtestmongodb##@@@cluster0.mongodb.net/migration_db?retryWrites=true&w=majority")
+
+# Инициализация подключения к MongoDB
+client = MongoClient(uri)
 db = client["migration_db"]
 collection = db["specialists"]
 
@@ -64,7 +66,9 @@ for specialist in specialists:
 # UPDATE Section
 st.header("Update Specialist Data")
 update_id = st.number_input("Specialist ID to Update", min_value=1, step=1)
-updated_field = st.selectbox("Field to Update", ["name", "age", "education", "specialization", "years_experience", "current_salary", "migration_date"])
+updated_field = st.selectbox(
+    "Field to Update", ["name", "age", "education", "specialization", "years_experience", "current_salary", "migration_date"]
+)
 updated_value = st.text_input(f"New Value for {updated_field}")
 
 if st.button("Update Specialist"):
