@@ -1,6 +1,11 @@
 import streamlit as st
 from pymongo import MongoClient
 from urllib.parse import quote_plus
+# Добавьте ключ для репозитория
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+
+# Добавьте репозиторий MongoDB в список источников
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/debian bullseye/mongodb-org/6.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 
 # Подключение к MongoDB (с кодированием пароля)
 username = "scofieldtestmongodb"  # Ваше имя пользователя
