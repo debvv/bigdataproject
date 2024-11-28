@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 
 # Подключение к MongoDB (с кодированием пароля)
 username = "scofieldtestmongodb"  # Ваше имя пользователя
-password = "scofieldtestmongodb##@@@"  # Ваш пароль
+password = "scofieldtestmongodb##@@"  # Ваш пароль
 encoded_password = quote_plus(password)  # Кодируем пароль
 uri = f"mongodb://{username}:{encoded_password}@cluster0.mongodb.net/migration_db?retryWrites=true&w=majority"
 #uri = f"mongodb+srv://{username}:{encoded_password}@cluster0.mongodb.net/migration_db?retryWrites=true&w=majority"
