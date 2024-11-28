@@ -16,3 +16,10 @@ except Exception as e:
     print(f"Ошибка подключения: {e}")
     # Заголовок приложения
     st.title("2")
+
+    data = fetch_all_data()
+    st.write("Отладка: данные из MongoDB", data)
+    if not data.empty:
+        st.dataframe(data)
+    else:
+        st.warning("Нет данных для отображения.")
