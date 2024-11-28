@@ -13,15 +13,9 @@ db = client['migration_db']
 collection = db['specialists']
 #client = MongoClient("mongodb://scofieldtestmongodb:scofieldtestmongodb##@@@localhost:27017/")
 try:
-    #client = MongoClient("mongodb://127.0.0.1:27017/")
-    #если защищена
-    
-
-    db = client['migration_db']
-    collection = db['specialists']
-    
+  
     # Проверка данных
-    specialists = list(collection.find({}))
+    specialists = list(db['specialists'].find())
     print(f"Найдено {len(specialists)} записей в коллекции 'specialists'")
     for specialist in specialists:
         print(specialist)
