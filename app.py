@@ -22,54 +22,45 @@ def fetch_all_data():
     return pd.DataFrame(data)
 
 # Функция: Расчет индекса миграции
-def calculate_migration_index(data):
-    return data['unemployment_rate'] + (100 - data['life_quality_index']) - data['political_stability_index']
+def calculate_migration_index(current_salary, years_experience):
+    # Простая модель: больше опыта и зарплаты — ниже вероятность миграции
+    return max(0, 100 - (current_salary / 1000 + years_experience * 2))
 
 # Функция: Расчет индекса удержания
-def calculate_retention_index(data):
-    return data['current_salary'] + data['it_sector_investments'] - data['offers_received_abroad']
+def calculate_retention_index(current_salary, job_satisfaction):
+    # Простая модель: высокая зарплата и удовлетворённость повышают удержание
+    return min(100, current_salary / 1000 + job_satisfaction * 10)
 
 # Добавление специалиста
 if choice == "Добавить специалиста":
     st.subheader("Добавить нового специалиста")
     with st.form("Добавление специалиста"):
         specialist_id = st.number_input("ID специалиста", min_value=1, step=1)
-        name = st.text_input("Полное имя")
         age = st.number_input("Возраст", min_value=18, step=1)
-        education = st.selectbox("Образование", ["Бакалавр", "Магистр", "PhD"])
+        education = st.selectbox("Образование", ["Bachelor", "Master", "PhD"])
         specialization = st.text_input("Специализация")
         years_experience = st.number_input("Опыт работы (лет)", min_value=0, step=1)
         current_salary = st.number_input("Текущая зарплата", min_value=0.0, step=100.0)
+        migration_date = st.date_input("Дата миграции (если есть)", value=None)
         job_satisfaction = st.slider("Удовлетворённость работой (1-10)", min_value=1, max_value=10)
-        offers_received_abroad = st.number_input("Предложения из-за рубежа", min_value=0, step=1)
-        destination_country = st.text_input("Страна назначения")
-        reason_for_leaving = st.text_area("Причина ухода")
 
         submit_button = st.form_submit_button("Добавить")
         
         if submit_button:
+            migration_index = calculate_migration_index(current_salary, years_experience)
+            retention_index = calculate_retention_index(current_salary, job_satisfaction)
+            
             specialist = {
                 "specialist_id": specialist_id,
-                "name": name,
                 "age": age,
                 "education": education,
                 "specialization": specialization,
                 "years_experience": years_experience,
                 "current_salary": current_salary,
+                "migration_date": str(migration_date) if migration_date else None,
                 "job_satisfaction": job_satisfaction,
-                "offers_received_abroad": offers_received_abroad,
-                "destination_country": destination_country,
-                "reason_for_leaving": reason_for_leaving,
-                "migration_index": calculate_migration_index({
-                    "unemployment_rate": 5,  # Примерные данные
-                    "life_quality_index": 70,
-                    "political_stability_index": 50
-                }),
-                "retention_index": calculate_retention_index({
-                    "current_salary": current_salary,
-                    "it_sector_investments": 10000,  # Примерные данные
-                    "offers_received_abroad": offers_received_abroad
-                })
+                "migration_index": migration_index,
+                "retention_index": retention_index
             }
             collection.insert_one(specialist)
             st.success("Специалист успешно добавлен!")
@@ -89,28 +80,35 @@ elif choice == "Обновить специалиста":
     data = fetch_all_data()
     if not data.empty:
         specialist_id = st.selectbox("Выберите ID специалиста", data['specialist_id'])
-        selected_specialist = collection.find_one({"specialist_id": specialist_id})
+        selected_specialist = collection.find_one({"specialist_id": specialist_id}, {"_id": 0})
         
         if selected_specialist:
             with st.form("Обновление специалиста"):
-                name = st.text_input("Полное имя", value=selected_specialist['name'])
                 age = st.number_input("Возраст", value=selected_specialist['age'], min_value=18, step=1)
-                education = st.selectbox("Образование", ["Бакалавр", "Магистр", "PhD"], index=["Бакалавр", "Магистр", "PhD"].index(selected_specialist['education']))
+                education = st.selectbox("Образование", ["Bachelor", "Master", "PhD"], 
+                                         index=["Bachelor", "Master", "PhD"].index(selected_specialist['education']))
                 specialization = st.text_input("Специализация", value=selected_specialist['specialization'])
                 years_experience = st.number_input("Опыт работы (лет)", value=selected_specialist['years_experience'], min_value=0, step=1)
                 current_salary = st.number_input("Текущая зарплата", value=selected_specialist['current_salary'], min_value=0.0, step=100.0)
+                job_satisfaction = st.slider("Удовлетворённость работой (1-10)", value=selected_specialist['job_satisfaction'], min_value=1, max_value=10)
+
                 update_button = st.form_submit_button("Обновить")
                 
                 if update_button:
+                    migration_index = calculate_migration_index(current_salary, years_experience)
+                    retention_index = calculate_retention_index(current_salary, job_satisfaction)
+
                     collection.update_one(
                         {"specialist_id": specialist_id},
                         {"$set": {
-                            "name": name,
                             "age": age,
                             "education": education,
                             "specialization": specialization,
                             "years_experience": years_experience,
-                            "current_salary": current_salary
+                            "current_salary": current_salary,
+                            "job_satisfaction": job_satisfaction,
+                            "migration_index": migration_index,
+                            "retention_index": retention_index
                         }}
                     )
                     st.success("Данные специалиста успешно обновлены!")
@@ -136,9 +134,10 @@ elif choice == "Анализ данных":
     st.subheader("Анализ данных специалистов")
     data = fetch_all_data()
     if not data.empty:
-        st.line_chart(data[["migration_index", "retention_index"]])
+        st.bar_chart(data[['migration_index', 'retention_index']])
         fig, ax = plt.subplots()
-        sns.histplot(data['job_satisfaction'], kde=True, ax=ax)
+        sns.histplot(data['current_salary'], kde=True, ax=ax, bins=20)
+        ax.set_title("Распределение зарплат")
         st.pyplot(fig)
     else:
         st.warning("Нет данных для анализа.")
