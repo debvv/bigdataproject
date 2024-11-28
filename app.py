@@ -2,7 +2,7 @@ import streamlit as st
 from pymongo import MongoClient
 
 # Подключение к MongoDB
-client = MongoClient("mongodb+srv://scofieldtestmongodb:<scofieldtestmongodb##@@>@cluster0.4jiw1.mongodb.net/migration_db?retryWrites=true&w=majority")
+client = MongoClient("mongodb+srv://<username>:<password>@cluster0.mongodb.net/migration_db?retryWrites=true&w=majority")
 db = client["migration_db"]
 collection = db["specialists"]
 
@@ -34,4 +34,42 @@ education = st.selectbox("Education Level", ["Bachelor", "Master", "PhD"])
 specialization = st.text_input("Specialization")
 experience = st.number_input("Years of Experience", min_value=0, step=1)
 salary = st.number_input("Current Salary", min_value=0, step=100)
-migration_date = st.text_input("Migration
+migration_date = st.text_input("Migration Date (YYYY-MM-DD)", value="")
+
+if st.button("Add Specialist"):
+    data = {
+        "specialist_id": specialist_id,
+        "name": name,
+        "age": age,
+        "education": education,
+        "specialization": specialization,
+        "years_experience": experience,
+        "current_salary": salary,
+        "migration_date": migration_date,
+    }
+    create_specialist(data)
+    st.success("Specialist added successfully!")
+
+# READ Section
+st.header("View All Specialists")
+specialists = read_specialists()
+for specialist in specialists:
+    st.write(specialist)
+
+# UPDATE Section
+st.header("Update Specialist Data")
+update_id = st.number_input("Specialist ID to Update", min_value=1, step=1)
+updated_field = st.selectbox("Field to Update", ["name", "age", "education", "specialization", "years_experience", "current_salary", "migration_date"])
+updated_value = st.text_input(f"New Value for {updated_field}")
+
+if st.button("Update Specialist"):
+    update_specialist(update_id, {updated_field: updated_value})
+    st.success("Specialist updated successfully!")
+
+# DELETE Section
+st.header("Delete Specialist")
+delete_id = st.number_input("Specialist ID to Delete", min_value=1, step=1)
+
+if st.button("Delete Specialist"):
+    delete_specialist(delete_id)
+    st.success("Specialist deleted successfully!")
