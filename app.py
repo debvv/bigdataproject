@@ -6,8 +6,8 @@ import seaborn as sns
 
 # Подключение к MongoDB
 client = MongoClient("mongodb://localhost:27017/")
-db = client['recrutare']
-collection = db['candidati']
+db = client['migration_db']
+collection = db['specialists']
 
 # Заголовок приложения
 st.title("Управление данными IT-специалистов")
